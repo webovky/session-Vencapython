@@ -13,6 +13,8 @@ app.secret_key = (
 # app.secret_key = os.urandom()
 
 
+
+
 @app.route("/")
 def index():
     return render_template("base.html.j2", a=12, b=3.14)
