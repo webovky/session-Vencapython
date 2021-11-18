@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <title>{%block title%}Titulek{%endblock%}</title>
     
-    <!--link rel="stylesheet" 
-          href="{{ url_for('static', filename='styles.css')}}" -->
+   link rel="stylesheet" 
+          href="{{ url_for('static', filename='styles.css')}}
 
 </head>
 
@@ -20,7 +20,9 @@
     <li><a href="/banany/ahoj">Banány</a></li>
 </ul>
 
-
+{% for message in get_flashed_messages() %}
+<p class="message">{{ message }}</p>
+{% endfor %}
 
 {% block obsah %}
 
