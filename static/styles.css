@@ -1,15 +1,21 @@
-h1 {
-    color: cadetblue;
+h1{
+    color:aqua
+}
+p{
+    color: blueviolet;
 }
 
-p {
-    color: rgb(236, 98, 33);
+.message{
+    width: 50%;
+    border: solid black 2px;
+    padding: lem;
+    color: rgb(153, 30, 210);
 }
 
-.pass {
-    color:blue;
+.pass{
+    color: green;
 }
 
-.err {
-    color:red;
+.err{
+    color: red;
 }

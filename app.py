@@ -1,18 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 
 app = Flask(__name__)
+""" secret_key se generuje pomoc os.urandom(počet znaku davej 24)
+    ale obecně je to prostě velké náhodné číslo
+    proměnnou secret_key nikdy nesdílím v depozitáři tak jako teď
 """
-* secret_key se generuje nejlépe pomocí os.urandom(24)
-* ale obecně je to prostě velké náhodné číslo
-* proměnnou secrec_key nikdi nikdy nidky nesdílím v repositáři!!! tak jako teď :)
-"""
-app.secret_key = (
-    b"\xe3\x84t\x8b\x02\x1c\xfb\x82PH\x19\xe8\x98\x05\x90\xa8\xc83\xf1\xe2\xf4v\xfe\xf0"
-    b"\xe3\x84t\x8b\x02\x1c\xfb\x82PH\x19\xe8\x98\x05\x90\xa8\xc83\xf1\xe2\xf4v\xfe\xf0"
-)
-# app.secret_key = os.urandom()
 
-
+app.secret_key = b'os.urandom(24)'
 
 
 @app.route("/")
@@ -22,7 +16,6 @@ def index():
 
 @app.route("/abc/", methods=["GET"])
 def abc():
-    session["user"] = "karel"
     try:
         x = request.args.get("x")
         y = request.args.get("y")
@@ -32,9 +25,9 @@ def abc():
     except ValueError:
         soucet = "Nedělej si srandu!!!"
 
-    slovo = request.args.get("slovo")
+    slovo = request.args.get('slovo')
     if slovo:
-        session["slovo"] = slovo
+        session['slovo'] = slovo
 
     return render_template("abc.html.j2", soucet=soucet)
 
@@ -49,32 +42,48 @@ def abc_post():
     return redirect(url_for("abc"))
 
 
-@app.route("/banany/<path:parametr>/")
+@app.route("/banany/<parametr>")
 def banany(parametr):
     return render_template("banany.html.j2", parametr=parametr)
 
 
 @app.route("/kvetak/")
 def kvetak():
-    return render_template("kvetak.html.j2")
+    if "user" in session:
+        return render_template("kvetak.html.j2")
+    else:
+        flash(f"Pro zobrazení této stránky ({request.path}) je nutné se přihlásit!", "err")
+        return redirect(url_for("login", next=request.path))
 
-
-@app.route("/login/", methods=["GET"])
+@app.route("/Login/", methods=["GET"])
 def login():
-    if request.method == "GET":
-        login = request.args.get("login")
-        passwd = request.args.get("passwd")
+    if request.method== "GET":
+        login=request.args.get("login")
+        passwd= request.args.get("password")
+        print(login, passwd)
     return render_template("login.html.j2")
 
 
-@app.route("/login/", methods=["POST"])
+@app.route("/Login/", methods=["POST"])
 def login_post():
-    login = request.form.get("login")
-    passwd = request.form.get("passwd")
-    print("Login:", login, "Heslo:", passwd)
-    if login == "karel" and passwd == "abcdefg":
-        session["user"] = login
-        flash("Úspěšné přihlášení.", "pass")
+    login= request.form.get("login")
+    passwd= request.form.get("password")
+    print(login, passwd)
+    if login =="mici36" and passwd =="1234":
+        session["user"]=login
+        flash("úspěšně jses přihlasil", "pass")
+        next= request.args.get("next")
+        if next:
+            return redirect(next)
     else:
-        flash("Neplatné přihlašovací údaje.", "err")
-    return redirect(url_for('login'))
+        flash("neplatné přihlašovací údaje", "err")
+    if next:
+        return redirect(url_for("login",next=next))
+    else:
+        return redirect(url_for("login"))
+
+@app.route("/Logout/")
+def logout():
+    session.pop("user", None)
+    flash("právě jsi se odhlásil", "pass")
+    return redirect (url_for("login"))
